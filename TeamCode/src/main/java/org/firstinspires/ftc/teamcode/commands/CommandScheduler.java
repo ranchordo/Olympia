@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.basecommands.Command;
 import org.firstinspires.ftc.teamcode.framework.util.TelemetryHandler;
 import org.firstinspires.ftc.teamcode.framework.controllers.Button;
@@ -18,6 +19,7 @@ public class CommandScheduler {
         LOW,
         HIGH
     }
+
 
     private ArrayList<Command> requestedAdditionList = new ArrayList<Command>();
     private ArrayList<Command> loopedCommandList = new ArrayList<Command>();
@@ -83,7 +85,7 @@ public class CommandScheduler {
                 }
             }
 
-            if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData("Requested Execution for", command.toString());
+            if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData("Requested Execution for", command.toString());
             requestedAdditionList.add(command);
 
             //Command priorities never get deleted in case they get re-added
@@ -97,12 +99,12 @@ public class CommandScheduler {
     public void requestCommandTermination(Command command) {
         if (requestedAdditionList.contains(command)) {
             //Mechanisms are not bound until execution, so wiping mechanism binding list isn't necessary here
-            if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData(command.toString(), "Removed from request list");
+            if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData(command.toString(), "Removed from request list");
             requestedAdditionList.remove(command);
         }
 
         if (commandExecutionList.contains(command)) {
-            if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData(command.toString(), "Attempted to remove from Execution List");
+            if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData(command.toString(), "Attempted to remove from Execution List");
 
             for (Mechanism boundMechanism : command.getBoundMechanisms()) if (mechanismLockingCommandMap.containsKey(boundMechanism)) mechanismLockingCommandMap.remove(boundMechanism);
             removedCommandList.add(command);
@@ -126,14 +128,14 @@ public class CommandScheduler {
                             if (mechanismLockingCommandMap.containsKey(mechanism)) {
                                 if (commandPriorityMap.get(command) == CommandPriority.LOW && commandPriorityMap.get(mechanismLockingCommandMap.get(mechanism)) == CommandPriority.HIGH) {
                                     passedCheck = false;
-                                    if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData("Priority Conflict", "Failed by " + command.toString());
+                                    if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData("Priority Conflict", "Failed by " + command.toString());
                                     break;
                                 }
                             }
                         }
                     }
 
-                    if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData("Did " + command.toString() + " pass its check?", passedCheck);
+                    if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData("Did " + command.toString() + " pass its check?", passedCheck);
                     if (passedCheck) {
                         //Wipe commands bound to mechanisms requested command requires
                         for (Mechanism boundMechanism : command.getBoundMechanisms()) {
@@ -145,7 +147,7 @@ public class CommandScheduler {
 
                             //Bind all mechanisms the command requires to it
                             mechanismLockingCommandMap.put(boundMechanism, command);
-                            if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData(boundMechanism.toString() + "now bound to", command.toString());
+                            if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData(boundMechanism.toString() + "now bound to", command.toString());
                         }
 
                         commandExecutionList.add(command);
@@ -166,14 +168,14 @@ public class CommandScheduler {
                             if (mechanismLockingCommandMap.containsKey(mechanism)) {
                                 if (commandPriorityMap.get(command) == CommandPriority.LOW && commandPriorityMap.get(mechanismLockingCommandMap.get(mechanism)) == CommandPriority.HIGH) {
                                     passedCheck = false;
-                                    if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData("Priority Conflict", "Failed by " + command.toString());
+                                    if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData("Priority Conflict", "Failed by " + command.toString());
                                     break;
                                 }
                             }
                         }
                     }
 
-                    if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData("Did " + command.toString() + " pass its check?", passedCheck);
+                    if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData("Did " + command.toString() + " pass its check?", passedCheck);
                     if (passedCheck) {
                         //Wipe commands bound to mechanisms requested command requires
                         for (Mechanism boundMechanism : command.getBoundMechanisms()) {
@@ -185,7 +187,7 @@ public class CommandScheduler {
 
                             //Bind all mechanisms the command requires to it
                             mechanismLockingCommandMap.put(boundMechanism, command);
-                            if (postingDebugTelemetry) TelemetryHandler.getInstance().getTelemetry().addData(boundMechanism.toString() + " now bound to ", command.toString());
+                            if (postingDebugTelemetry) TelemetryHandler.getTelemetry().addData(boundMechanism.toString() + " now bound to ", command.toString());
                         }
 
                         commandExecutionList.add(command);
@@ -245,16 +247,16 @@ public class CommandScheduler {
     //Literally just dump all important stored information into the telemetry
     private void postListStatus() {
         for (Map.Entry<Mechanism, Command> entry : mechanismLockingCommandMap.entrySet()) {
-            TelemetryHandler.getInstance().getTelemetry().addData(entry.getKey().toString() + "is bound by", entry.getValue().toString());
+            TelemetryHandler.getTelemetry().addData(entry.getKey().toString() + "is bound by", entry.getValue().toString());
         }
         for (Command command : loopedCommandList) {
-            TelemetryHandler.getInstance().getTelemetry().addData("Currently Attempting to Loop", command.toString());
+            TelemetryHandler.getTelemetry().addData("Currently Attempting to Loop", command.toString());
         }
         for (Command command : requestedAdditionList) {
-            TelemetryHandler.getInstance().getTelemetry().addData("Currently Requesting", command.toString());
+            TelemetryHandler.getTelemetry().addData("Currently Requesting", command.toString());
         }
         for (Command command : commandExecutionList) {
-            TelemetryHandler.getInstance().getTelemetry().addData("Currently Executing", command.toString());
+            TelemetryHandler.getTelemetry().addData("Currently Executing", command.toString());
         }
     }
 

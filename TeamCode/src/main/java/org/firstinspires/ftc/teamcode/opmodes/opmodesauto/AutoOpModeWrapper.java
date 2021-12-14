@@ -52,7 +52,7 @@ abstract class AutoOpModeWrapper extends OpMode {
     }
     @Override
     public final void init() {
-        TelemetryHandler.getInstance().setTelemetry(telemetry);
+        TelemetryHandler.setTelemetry(telemetry);
 
         MechanismEngine.getInstance().refreshInstance();
         MechanismEngine.getInstance().setHardwareMap(hardwareMap);
@@ -64,6 +64,7 @@ abstract class AutoOpModeWrapper extends OpMode {
         }
 
         scheduler.scrubCommands();
+        scheduler.beginCheckingCommands();
 
         autoLoop();
 
@@ -83,6 +84,7 @@ abstract class AutoOpModeWrapper extends OpMode {
 
     @Override
     public final void stop() {
+        scheduler.stopCheckingCommands();
         scheduler.end();
         if(camera!=null) {
             camera.stopStreaming();

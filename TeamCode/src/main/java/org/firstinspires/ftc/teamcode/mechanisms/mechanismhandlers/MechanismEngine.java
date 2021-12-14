@@ -24,27 +24,20 @@ public class MechanismEngine {
 
     //Mechanism table handling
     private Map<Class, Object> rawMechanismMap = new HashMap<Class, Object>();
-    public <T> T getMechanism(Class<T> mechanismKey) {
-        T returnInstance = null;
+    public <T extends Mechanism> T getMechanism(Class<T> mechanismKey) {
 
         try {
             if (!getInstance().rawMechanismMap.containsKey(mechanismKey)) {
-                T obj = mechanismKey.newInstance();
+                Mechanism obj = mechanismKey.newInstance();
                 getInstance().rawMechanismMap.put(mechanismKey, obj);
-
-                try {
-                    Mechanism castedMechanism = (Mechanism) obj;
-                    castedMechanism.init(localHardwareMap);
-                } catch (Exception e) {
-                    //Future TelemetryHandler warning for "Improper Mechanism Cast"
-                }
+                obj.init(localHardwareMap);
             }
-            returnInstance = (T) getInstance().rawMechanismMap.get(mechanismKey);
+            return (T) getInstance().rawMechanismMap.get(mechanismKey);
         } catch (Exception e) {
             //Future Telemetry Post for "Cannot Instantiate"
         }
 
-        return returnInstance;
+        return null;
     }
 
     //Mechanism Initialization Handling

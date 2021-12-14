@@ -151,7 +151,7 @@ abstract class TeleOpModeWrapper extends OpMode {
 //        gamepad1.setJoystickDeadzone(CONTROLLER_1_DEADZONE); //I couldn't find a method for this under ftc 7.0.0
 //        gamepad2.setJoystickDeadzone(CONTROLLER_2_DEADZONE);
 
-        TelemetryHandler.getInstance().setTelemetry(telemetry);
+        TelemetryHandler.setTelemetry(telemetry);
 
         MechanismEngine.getInstance().refreshInstance();
         MechanismEngine.getInstance().setHardwareMap(hardwareMap);
